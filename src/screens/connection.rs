@@ -1,9 +1,13 @@
 use crossterm::event::{KeyCode, KeyEventKind};
-use ratatui::widgets::{Block, Borders};
+use ratatui::{
+    prelude::{Constraint, Direction, Layout},
+    widgets::{Block, Borders, Widget},
+};
 
 use crate::{
     app::{App, Screens},
     event::EventHandler,
+    widgets::dropdown::Dropdown,
 };
 
 use super::Screen;
@@ -18,8 +22,13 @@ impl ConnectionScreen {
 
 impl Screen for ConnectionScreen {
     fn render(&self, frame: &mut ratatui::Frame<'_>, area: ratatui::prelude::Rect) {
+        let container = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints(Constraint::from_percentages([50, 50]))
+            .split(area);
         let block = Block::default().borders(Borders::ALL).title("Home Screen");
-        frame.render_widget(block, area);
+        let dropdown = Dropdown::new(String::from("Database"), vec![]);
+        frame.render_widget(block, container[0]);
     }
 
     fn handle_input(&mut self, app: &mut App, events: &EventHandler) {
