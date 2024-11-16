@@ -14,7 +14,7 @@ impl DashboardScreen {
 }
 
 impl Screen for DashboardScreen {
-    fn render(&self, frame: &mut ratatui::Frame<'_>, area: ratatui::prelude::Rect) {
+    fn render(&self, frame: &mut ratatui::Frame<'_>, area: ratatui::prelude::Rect, app: &App) {
         let block = Block::default()
             .borders(Borders::ALL)
             .title("Dashboard Screen");

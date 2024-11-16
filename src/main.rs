@@ -3,6 +3,7 @@ use crate::app::App;
 pub mod app;
 pub mod event;
 pub mod screens;
+pub mod utils;
 pub mod widgets;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

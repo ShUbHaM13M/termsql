@@ -1,5 +1,11 @@
-use ratatui::widgets::{StatefulWidget, Widget};
+use ratatui::{
+    style::{Color, Style},
+    widgets::{Block, BorderType, Borders, StatefulWidget, Widget},
+};
 
+use crate::app::DatabaseType;
+
+#[derive(Clone)]
 pub struct Dropdown {
     label: String,
     options: Vec<String>,
@@ -7,7 +13,7 @@ pub struct Dropdown {
 }
 
 pub struct DropdownState {
-    selected: Option<u32>,
+    pub selected: Option<DatabaseType>,
 }
 
 impl Dropdown {
@@ -29,6 +35,21 @@ impl StatefulWidget for Dropdown {
         buf: &mut ratatui::prelude::Buffer,
         state: &mut Self::State,
     ) {
-        todo!()
+        let block = Block::default()
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded)
+            .title(self.label);
+        block.render(area, buf);
+        let mut selected = "Select database type";
+
+        if state.selected.is_some() {
+            selected = match state.selected.unwrap() {
+                DatabaseType::MySql => "MySql",
+                DatabaseType::PostgreSql => "PostgreSql",
+                DatabaseType::Sqlite => "Sqlite",
+            };
+        }
+
+        buf.set_string(area.x + 2, area.y + 1, selected, Style::default());
     }
 }

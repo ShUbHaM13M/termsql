@@ -10,8 +10,17 @@ pub enum Screens {
     Dashboard,
 }
 
+// TODO: Move to another file
+#[derive(Clone, Copy)]
+pub enum DatabaseType {
+    MySql,
+    PostgreSql,
+    Sqlite,
+}
+
 pub struct App {
     pub current_screen: Screens,
+    pub database: Option<DatabaseType>,
     pub should_quit: bool,
 }
 
@@ -20,6 +29,7 @@ impl App {
         App {
             current_screen: Screens::Connection,
             should_quit: false,
+            database: None,
         }
     }
 
@@ -27,12 +37,12 @@ impl App {
         let events = EventHandler::new(250);
         while !self.should_quit {
             let mut screen: Option<Box<dyn Screen>> = match self.current_screen {
-                Screens::Connection => Some(Box::new(ConnectionScreen)),
+                Screens::Connection => Some(Box::new(ConnectionScreen::new())),
                 Screens::Dashboard => Some(Box::new(DashboardScreen)),
             };
             terminal.draw(|frame| {
                 if screen.is_some() {
-                    screen.as_ref().unwrap().render(frame, frame.area());
+                    screen.as_ref().unwrap().render(frame, frame.area(), &self);
                 } else {
                     let greeting = Paragraph::new("Hello Ratatui! {} (press 'q' to quit)")
                         .white()

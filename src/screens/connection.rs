@@ -1,34 +1,56 @@
 use crossterm::event::{KeyCode, KeyEventKind};
 use ratatui::{
-    prelude::{Constraint, Direction, Layout},
-    widgets::{Block, Borders, Widget},
+    prelude::{Alignment, Constraint, Direction, Layout, Position},
+    widgets::{block::Title, Block, BorderType, Borders, Padding},
 };
 
 use crate::{
     app::{App, Screens},
     event::EventHandler,
-    widgets::dropdown::Dropdown,
+    utils::centered,
+    widgets::dropdown::{Dropdown, DropdownState},
 };
 
 use super::Screen;
 
-pub struct ConnectionScreen;
+pub struct ConnectionScreen {
+    database_dropdown: Dropdown,
+}
 
 impl ConnectionScreen {
     pub fn new() -> Self {
-        ConnectionScreen
+        ConnectionScreen {
+            database_dropdown: Dropdown::new(String::from("Database"), vec![]),
+        }
     }
 }
 
 impl Screen for ConnectionScreen {
-    fn render(&self, frame: &mut ratatui::Frame<'_>, area: ratatui::prelude::Rect) {
+    fn render(&self, frame: &mut ratatui::Frame<'_>, area: ratatui::prelude::Rect, app: &App) {
+        let container = centered(60, 40, area);
+        let block = Block::default()
+            .padding(Padding::new(2, 2, 1, 1))
+            .title_top(" Database Connection ")
+            .title_alignment(Alignment::Center)
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded);
+
+        let inner = block.inner(container);
+        frame.render_widget(block, container);
+
         let container = Layout::default()
             .direction(Direction::Vertical)
-            .constraints(Constraint::from_percentages([50, 50]))
-            .split(area);
-        let block = Block::default().borders(Borders::ALL).title("Home Screen");
-        let dropdown = Dropdown::new(String::from("Database"), vec![]);
-        frame.render_widget(block, container[0]);
+            .constraints([Constraint::Fill(1)])
+            .split(inner);
+
+        let mut dropdown_state = DropdownState {
+            selected: app.database,
+        };
+        frame.render_stateful_widget(
+            self.database_dropdown.clone(),
+            container[0],
+            &mut dropdown_state,
+        );
     }
 
     fn handle_input(&mut self, app: &mut App, events: &EventHandler) {
